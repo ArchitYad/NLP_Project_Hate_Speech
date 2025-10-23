@@ -1,1 +1,2 @@
 english_model/*.safetensors filter=lfs diff=lfs merge=lfs -text
+marathi_model/*.safetensors filter=lfs diff=lfs merge=lfs -text
