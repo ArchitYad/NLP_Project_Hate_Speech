@@ -1,39 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Multilingual Hate Speech Detector</title>
-  <link rel="stylesheet" href="/static/style.css" />
+    <meta charset="UTF-8">
+    <title>Multilingual Hate Speech Detector</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🧠 Multilingual Hate Speech Detector</h1>
-    <form method="post" action="/analyze">
-      <label for="lang">🌐 Select Language:</label>
-      <select name="lang" id="lang">
-        <option value="english" {{ 'selected' if lang == 'english' else '' }}>English</option>
-        <option value="marathi" {{ 'selected' if lang == 'marathi' else '' }}>Marathi</option>
-      </select>
+    <div class="container">
+        <h1>🧠 Multilingual Hate Speech Detector</h1>
+        <p>Detects hate speech in English & Marathi text and explains results with LIME.</p>
 
-      <textarea name="text" rows="6" placeholder="Enter text...">{{ text or '' }}</textarea>
-      <button type="submit">Analyze</button>
-    </form>
+        <form method="post" action="/analyze">
+            <label for="language">🌐 Select Language:</label><br>
+            <input type="radio" id="english" name="language" value="English" checked>
+            <label for="english">English</label>
+            <input type="radio" id="marathi" name="language" value="Marathi">
+            <label for="marathi">Marathi</label><br><br>
 
-    {% if prediction %}
-    <div class="result">
-      <h2>🧩 Prediction: {{ prediction }}</h2>
-      <p><strong>Confidence:</strong> {{ confidence }}</p>
+            <label for="text">✏️ Enter text:</label><br>
+            <textarea name="text" id="text" rows="6" placeholder="Type your text here...">{{ original_text if original_text else '' }}</textarea><br><br>
 
-      <h3>🔢 Class Probabilities</h3>
-      <ul>
-        {% for label, prob in probs %}
-          <li>{{ label }} → {{ '%.2f'|format(prob*100) }}%</li>
-        {% endfor %}
-      </ul>
+            <button type="submit">Analyze</button>
+        </form>
 
-      <h3>🧠 LIME Explanation</h3>
-      <iframe srcdoc="{{ explanation | safe }}" width="100%" height="500"></iframe>
+        {% if stages %}
+        <div class="stages">
+            <h2>🔹 Analysis Stages:</h2>
+            <ul>
+                {% for stage in stages %}
+                    <li><strong>{{ stage.stage }}:</strong> {{ stage.value if stage.value else "Loading..." }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if cleaned_text %}
+        <div class="cleaned">
+            <h2>🧹 Cleaned Text</h2>
+            <p>{{ cleaned_text }}</p>
+        </div>
+        {% endif %}
+
+        {% if pred_label %}
+        <div class="prediction">
+            <h2>🧩 Prediction</h2>
+            <p><strong>{{ pred_label }}</strong> with confidence:</p>
+            <ul>
+                {% for lbl, prob in probs|zip(labels) %}
+                    <li>{{ lbl }}: {{ '%.2f'|format(prob*100) }}%</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if lime_html %}
+        <div class="lime">
+            <h2>🧠 LIME Explanation</h2>
+            <iframe srcdoc="{{ lime_html|safe }}" width="100%" height="500px" style="border:none;"></iframe>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-  </div>
 </body>
 </html>
