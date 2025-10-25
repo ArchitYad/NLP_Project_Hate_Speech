@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Multilingual Hate Speech Detector</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Multilingual Hate Speech Detector</h1>
+    <form method="post" action="/analyze">
+      <label for="lang">🌐 Select Language:</label>
+      <select name="lang" id="lang">
+        <option value="english" {{ 'selected' if lang == 'english' else '' }}>English</option>
+        <option value="marathi" {{ 'selected' if lang == 'marathi' else '' }}>Marathi</option>
+      </select>
+
+      <textarea name="text" rows="6" placeholder="Enter text...">{{ text or '' }}</textarea>
+      <button type="submit">Analyze</button>
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+      <h2>🧩 Prediction: {{ prediction }}</h2>
+      <p><strong>Confidence:</strong> {{ confidence }}</p>
+
+      <h3>🔢 Class Probabilities</h3>
+      <ul>
+        {% for label, prob in probs %}
+          <li>{{ label }} → {{ '%.2f'|format(prob*100) }}%</li>
+        {% endfor %}
+      </ul>
+
+      <h3>🧠 LIME Explanation</h3>
+      <iframe srcdoc="{{ explanation | safe }}" width="100%" height="500"></iframe>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
