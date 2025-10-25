@@ -4,4 +4,3 @@ transformers
 numpy
 lime
 emoji
-safetensors
