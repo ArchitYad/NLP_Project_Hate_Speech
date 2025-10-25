@@ -7,3 +7,4 @@ lime
 emoji
 numpy
 protobuf
+python-multipart
