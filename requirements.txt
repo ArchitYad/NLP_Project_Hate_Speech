@@ -1,6 +1,7 @@
 streamlit
 torch
 transformers
-numpy
 lime
 emoji
+numpy
+protobuf
