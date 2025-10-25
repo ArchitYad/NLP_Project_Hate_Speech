@@ -1,10 +1,7 @@
-fastapi
-uvicorn
-jinja2
+streamlit
 torch
 transformers
 lime
 emoji
 numpy
 protobuf
-python-multipart
