@@ -1,4 +1,6 @@
-streamlit
+fastapi
+uvicorn
+jinja2
 torch
 transformers
 lime
