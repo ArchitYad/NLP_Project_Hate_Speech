@@ -1,7 +1,7 @@
 import streamlit as st
 import torch
 import numpy as np
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification
 from lime.lime_text import LimeTextExplainer
 import re
 import emoji
@@ -23,14 +23,16 @@ def clean_text(text):
 # -----------------------------
 @st.cache_resource
 def load_english_model():
-    model_path = "english_pt"  # folder with tokenizer files + .pt
+    model_path = "english_pt"  # folder with tokenizer + config + .pt
     tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-    # Load config first
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_path,
-        state_dict=torch.load(f"{model_path}/english_model.pt", map_location="cpu"),
-    )
+    # Load config and initialize empty model
+    config = AutoConfig.from_pretrained(model_path)
+    model = AutoModelForSequenceClassification.from_config(config)
+
+    # Load .pt weights manually
+    state_dict = torch.load(f"{model_path}/english_model.pt", map_location="cpu")
+    model.load_state_dict(state_dict)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
