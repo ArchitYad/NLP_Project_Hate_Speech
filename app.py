@@ -23,22 +23,24 @@ def clean_text(text):
 # -----------------------------
 @st.cache_resource
 def load_english_model():
-    model_path = "english_pt/model.pt"  # path to your .pt file
-    tokenizer_path = "english_pt"        # folder containing tokenizer files
+    model_path = "english_pt"  # folder with tokenizer files + .pt
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-    # Load tokenizer normally
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
-
-    # Load model architecture first
+    # Load config first
     model = AutoModelForSequenceClassification.from_pretrained(
-        tokenizer_path,  # to get config
-        num_labels=3,    # same as your labels
-        state_dict=torch.load(model_path, map_location=torch.device("cpu"))
+        model_path,
+        state_dict=torch.load(f"{model_path}/english_model.pt", map_location="cpu"),
     )
 
-    model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
     model.eval()
     return tokenizer, model
+
+tokenizer, model = load_english_model()
+labels = ["hatespeech", "normal", "offensive"]
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 # -----------------------------
 # 3. Prediction Function
 # -----------------------------
@@ -87,7 +89,7 @@ if st.button("Analyze"):
             text_instance=cleaned_text,
             classifier_fn=predict_fn,
             num_features=8,
-            num_samples=100  # lower = faster
+            num_samples=100
         )
 
         st.components.v1.html(exp.as_html(), height=500, scrolling=True)
