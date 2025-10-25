@@ -1,0 +1,7 @@
+streamlit
+torch
+transformers
+numpy
+lime
+emoji
+safetensors
